@@ -1,0 +1,10 @@
+
+What data do we have:
+ - text
+ - sequence
+ - alphabet index
+ - parity for each string
+ - parity for each character
+
+What we need to do:
+ - Create a unique flag that is consistent for each sub parity but unique from any other parity
