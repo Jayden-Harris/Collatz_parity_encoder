@@ -1,7 +1,6 @@
 import string
-from collections import deque
 
-def collatz(n: int) -> str:
+def generate_collatz_parity(n: int) -> str:
     """Generate parity sequence from Collatz iteration of n."""
     parity = []
     while n != 1:
@@ -10,71 +9,41 @@ def collatz(n: int) -> str:
             n = n // 2
         else:
             n = 3 * n + 1
-    return ''.join(parity)
+    return "".join(parity)
 
+def find_unused_flag(parity_list, max_len=8):
+    for length in range(1, max_len + 1):
+        for i in range(2 ** length):
+            candidate = format(i, f"0{length}b")
+            if all(candidate not in p for p in parity_list):
+                return candidate
+    return None
 
-def reverse_from_parity(parity_str: str, final: int = 1) -> int | None:
-    """Reverse the Collatz parity sequence to recover original number."""
-    n = final
-    for bit in reversed(parity_str):
-        if bit == '0':
-            n = n * 2
-        elif bit == '1':
-            if (n - 1) % 3 != 0:
-                return None
-            prev = (n - 1) // 3
-            if prev % 2 == 0:
-                return None
-            n = prev
-        else:
-            return None
-    return n
-
-
-def generate_sequence(data: str) -> list[int]:
+def generate_sequence(data):
     alpha = string.ascii_lowercase
-    return [alpha.index(c) for c in data.lower() if c in alpha]
+    alpha_map = {char: idx for idx, char in enumerate(alpha, start=1)}
+    return [alpha_map[c] for c in data.lower() if c in alpha]
 
-
-def consume_sequence(sequence: list[int]) -> str:
-    alpha = string.ascii_lowercase
-    return ''.join(alpha[s] for s in sequence if 0 <= s < len(alpha))
-
-
-def encrypt(sequence: list[int]) -> tuple[list[int], list[str]]:
-    encrypted_flags = []
-    parity_list = []
-    for num in sequence:
-        par = collatz(num)
-        encrypted_flags.append(1)  # Placeholder or marker
-        parity_list.append(par)
-    return encrypted_flags, parity_list
-
-
-def decrypt(encrypted: list[int], parity: list[str]) -> str:
-    sequence = []
-    for flag, par in zip(encrypted, parity):
-        n = reverse_from_parity(par, final=flag)
-        if n is None:
-            raise ValueError(f"Invalid parity sequence encountered: {par}")
-        sequence.append(n)
-
-    return consume_sequence(sequence)
-
+def encode(plain_text):
+    encoded = []
+    sequence = generate_sequence(plain_text)
+    
+    parity_list = [generate_collatz_parity(s) for s in sequence]
+    
+    # Find a unique binary flag not present in any parity string
+    flag = find_unused_flag(parity_list)
+    if not flag:
+        raise ValueError("No unique flag found")
+    
+    # Append each parity + flag
+    for parity in parity_list:
+        encoded.append(parity + flag)
+    
+    return "".join(encoded)
 
 def main():
-    input_str = "hello world"
-    sequence = generate_sequence(input_str)
-
-    encrypted_string, parity = encrypt(sequence)
-    print("Encrypted String: " + "".join(str(n) for n in encrypted_string))
-    print("Parity sequence: " + "-".join(parity))
-
-    print("---------------------------------------------------------")
-
-    decrypted_string = decrypt(encrypted_string, parity)
-    print("Decrypted String:", decrypted_string)
-
+    encoded = encode("Hello world")
+    print(encoded)
 
 if __name__ == "__main__":
     main()
