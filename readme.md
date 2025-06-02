@@ -1,42 +1,54 @@
-# Collatz Encryption: Reversible Encryption Using the Collatz Conjecture Parity Sequences
+# 🔐 Collatz Parity Encoder/Decoder
 
-![Collatz Encryption](https://img.shields.io/badge/Status-Experimental-blue)
-
-## Overview
-
-This project presents a novel reversible encryption algorithm based on the **Collatz conjecture** and its parity sequences. By encoding input data as sequences of parity bits generated from the Collatz process, and using a custom reverse procedure, the algorithm enables encryption and decryption without prior knowledge of the original number.
-
-This approach explores the computational and theoretical properties of the Collatz conjecture applied to cryptography, offering a unique perspective on reversible sequence generation.
+This Python script implements a **reversible encoder and decoder** using **Collatz parity sequences**. It converts printable ASCII strings into a binary format using the Collatz conjecture and can decode the binary back to the original text without needing explicit metadata.
 
 ---
 
-## Features
+## 📌 Features
 
-- Generate parity sequences from Collatz iterations of numeric inputs.
-- Reverse parity sequences to recover original numeric data.
-- Map textual data to numeric sequences and vice versa.
-- Proof-of-concept encryption and decryption pipelines.
-- Lightweight and implemented in Python for easy experimentation.
-
----
-
-## How It Works
-
-1. **Encoding**  
-   Each character is mapped to an index number (0-25 for a-z).  
-   The Collatz parity sequence is computed for each number, producing a string of '0's and '1's representing even and odd steps.
-
-2. **Decoding**  
-   The parity sequence is reversed step-by-step starting from 1, reconstructing the original number.  
-   This enables the original text to be recovered from the parity data.
+- 🔁 **Bidirectional transformation**: Encode and decode any printable string.
+- 🧬 **Based on Collatz Conjecture**: Transforms character codes via parity tracking.
+- 🏷️ **Metadata-free decoding**: Uses a unique flag (`11`) to delimit sequences.
+- 💡 **CLI support**: Easily encode or decode from the command line.
 
 ---
 
-## Usage
+🛠 Function Overview
 
-Clone the repository and run the provided script:
+encode(plain_text):
+Converts text into a binary string using Collatz parity sequences.
+
+decode(parity_str):
+Converts a binary parity string back into the original text.
+
+generate_collatz_parity(n):
+Produces the parity sequence (1 = odd, 0 = even) from a Collatz iteration.
+
+reverse_from_parity(parity_str):
+Attempts to reverse a parity string back into the original number.
+
+generate_sequence(data):
+Maps characters to unique indices.
+
+reverse_sequence(nums):
+Maps indices back to characters.
+
+---
+
+## 📦 Requirements
+
+- Python 3.7 or later  
+*(No external libraries required.)*
+
+---
+
+## 🚀 Usage
+
+### 🔧 Command-Line
 
 ```bash
-git clone 
-cd collatz_encryption
-python3 collatz.py
+# Encode a string
+python3 collatz_encoder.py encode "Hello, World! 123"
+
+# Decode a parity string
+python3 collatz_encoder.py decode "1010110111101011011010110111101110110111011111011011..."
