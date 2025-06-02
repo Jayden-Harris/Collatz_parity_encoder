@@ -11,39 +11,67 @@ def generate_collatz_parity(n: int) -> str:
             n = 3 * n + 1
     return "".join(parity)
 
-def find_unused_flag(parity_list, max_len=8):
-    for length in range(1, max_len + 1):
-        for i in range(2 ** length):
-            candidate = format(i, f"0{length}b")
-            if all(candidate not in p for p in parity_list):
-                return candidate
-    return None
-
 def generate_sequence(data):
-    alpha = string.ascii_lowercase
-    alpha_map = {char: idx for idx, char in enumerate(alpha, start=1)}
-    return [alpha_map[c] for c in data.lower() if c in alpha]
+    printable_chars = string.printable.replace("\n", "").replace("\r", "")  # keeps space
+    char_map = {char: idx for idx, char in enumerate(printable_chars, start=2)}
+    return [char_map[c] for c in data if c in char_map]
+
+
+def reverse_sequence(nums):
+    printable_chars = string.printable.replace("\n", "").replace("\r", "")  # keeps space
+    char_map = {char: idx for idx, char in enumerate(printable_chars, start=2)}
+    reversed_map = {idx: char for char, idx in char_map.items()}
+    return [reversed_map[num] for num in nums if num in reversed_map]
+
+def reverse_from_parity(parity_str: str, final: int = 1) -> int | None:
+    """Reverse the Collatz parity sequence to recover original number."""
+    n = final
+    for bit in reversed(parity_str):
+        if bit == '0':
+            n = n * 2
+        elif bit == '1':
+            if (n - 1) % 3 != 0:
+                return None
+            prev = (n - 1) // 3
+            if prev % 2 == 0:
+                return None
+            n = prev
+        else:
+            return None
+    return n
 
 def encode(plain_text):
     encoded = []
     sequence = generate_sequence(plain_text)
     
     parity_list = [generate_collatz_parity(s) for s in sequence]
-    
-    # Find a unique binary flag not present in any parity string
-    flag = find_unused_flag(parity_list)
-    if not flag:
-        raise ValueError("No unique flag found")
-    
-    # Append each parity + flag
+  
     for parity in parity_list:
-        encoded.append(parity + flag)
+        encoded.append(parity + "11")
     
     return "".join(encoded)
 
+def decode(parity_str):
+    parity_arr = [p for p in parity_str.split("11") if p]  # Filter out empty strings
+    sequence = []
+
+    for p in parity_arr:
+        n = reverse_from_parity(p)
+        if n is None:
+            raise ValueError(f"Invalid parity sequence: {p}")
+        sequence.append(n)
+    
+    char_array = reverse_sequence(sequence)
+    return "".join(char_array)
+
 def main():
-    encoded = encode("Hello world")
+    text = "hello! 1230"
+    encoded = encode(text)
+
     print(encoded)
+
+    decoded = decode(encoded)
+    print(decoded)
 
 if __name__ == "__main__":
     main()
