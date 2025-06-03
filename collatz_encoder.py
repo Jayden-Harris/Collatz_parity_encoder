@@ -20,22 +20,22 @@ def generate_collatz_parity(n: int) -> str:
 def generate_sequence(data: str) -> list[int]:
     """
     Convert a string into a list of integer codes corresponding
-    to printable ASCII characters, starting index at 2.
-    Ignores newline and carriage return characters.
+    to their ASCII code
     """
-    printable_chars = string.printable.replace("\n", "").replace("\r", "")
-    char_map = {char: idx for idx, char in enumerate(printable_chars, start=2)}
-    return [char_map[c] for c in data if c in char_map]
+    sequence = []
+    for d in data:
+        sequence.append(ord(d))
+    return sequence
 
 def reverse_sequence(nums: list[int]) -> list[str]:
     """
     Convert a list of integer codes back to their corresponding
     printable ASCII characters.
     """
-    printable_chars = string.printable.replace("\n", "").replace("\r", "")
-    char_map = {char: idx for idx, char in enumerate(printable_chars, start=2)}
-    reversed_map = {idx: char for char, idx in char_map.items()}
-    return [reversed_map[num] for num in nums if num in reversed_map]
+    original_string = []
+    for n in nums:
+        original_string.append(chr(n))
+    return original_string
 
 def reverse_from_parity(parity_str: str, final: int = 1) -> int | None:
     """
